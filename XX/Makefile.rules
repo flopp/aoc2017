@@ -1,0 +1,9 @@
+CXXFLAGS=-std=c++11 -O3 -W -Wall
+
+%: %.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $< 
+
+all: $(PROGS)
+
+clean:
+	rm -f $(PROGS)
