@@ -1,9 +1,12 @@
 CXXFLAGS=-std=c++11 -O3 -W -Wall
 
-%: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ $< 
+part1: main.cpp
+	$(CXX) $(CXXFLAGS) -DPART1 -o $@ $< 
 
-all: $(PROGS)
+part2: main.cpp
+	$(CXX) $(CXXFLAGS) -DPART2 -o $@ $< 
+
+all: part1 part2
 
 clean:
-	rm -f $(PROGS)
+	rm -f part1 part2
