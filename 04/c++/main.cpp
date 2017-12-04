@@ -13,10 +13,9 @@ bool is_valid(const std::string& line) {
 #ifdef PART2
         std::sort(s.begin(), s.end());
 #endif
-        if (unique.find(s) != unique.end()) {
+        if (!unique.insert(s).second) {
             return false;
         }
-        unique.insert(s);
     }
     return true;
 }
