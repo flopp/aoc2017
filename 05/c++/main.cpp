@@ -1,12 +1,10 @@
 #include <iostream>
+#include <iterator>
 #include <vector>
 
 
 int main() {
-    std::vector<int> offsets;
-    for (int i; std::cin >> i; /**/) {
-        offsets.push_back(i);
-    }
+    std::vector<int> offsets{std::istream_iterator<int>{std::cin}, {}};
 
     int pos = 0;
     int jumps = 0;
@@ -15,9 +13,11 @@ int main() {
 #ifdef PART1
         pos += (offsets[pos]++);
 #else
-        const int oldpos = pos;
-        pos += offsets[pos];
-        offsets[oldpos] += (offsets[oldpos] >= 3) ? -1 : +1;
+        if (offsets[pos] >= 3) {
+            pos += (offsets[pos]--);
+        } else {
+            pos += (offsets[pos]++);
+        }
 #endif
             
     }
