@@ -1,5 +1,6 @@
-#include <iostream>
 #include <array>
+#include <iostream>
+#include <numeric>
 #include <vector>
 
 int main() {
@@ -32,18 +33,10 @@ int main() {
         }
     }
     
-    // create dense-hash
-    std::array<unsigned char, 16> dense_hash;
-    for (auto block = 0; block < 16; ++block) {
-        dense_hash[block] = 0;
-        for (auto number = 0; number < 16; ++number) {
-            dense_hash[block] ^= sparse_hash[16 * block + number]; 
-        }
+    // create & print dense-hash
+    for (auto block = sparse_hash.begin(); block != sparse_hash.end(); std::advance(block, 16)) {
+        printf("%02x", std::accumulate(block, block + 16, (unsigned char)0, std::bit_xor<unsigned char>()));
     }
     
-    // print dense-hash
-    for (auto c: dense_hash) {
-        printf("%.02x", c);
-    }
     return 0;
 }
