@@ -11,4 +11,4 @@ puzzle1: part1
 
 puzzle2: part2
 	@echo "puzzle result:"
-	@time ./$< 304
+	@time ./$< < ../puzzle1.txt
