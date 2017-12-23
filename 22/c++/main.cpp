@@ -1,38 +1,32 @@
 #include <cassert>
 #include <iostream>
 #include <string>
-#include <set>
+#include <map>
 
 typedef std::pair<int, int> XY;
-
-void draw(const std::set<XY>& infected, const XY& p) {
-    int min_x = p.first;
-    int max_x = p.first;
-    int min_y = p.second;
-    int max_y = p.second;
-    
-    for (auto i: infected) {
-        min_x = std::min(min_x, i.first);
-        max_x = std::max(max_x, i.first);
-        min_y = std::min(min_y, i.second);
-        max_y = std::max(max_y, i.second);
-    }
-    
-    for (auto y = min_y; y <= max_y; ++y) {
-        for (auto x = min_x; x <= max_x; ++x) {
-            XY xy{x, y};
-            if (xy == p) {
-                std::cout << ((infected.find(xy) != infected.end()) ? "[#]" : "[.]");
-            } else {
-                std::cout << ((infected.find(xy) != infected.end()) ? " # " : " . ");
-            }
-        }
-        std::cout << std::endl;
-    }
+void reverse(XY& dir) {
+    dir.first *= -1;
+    dir.second *= -1;
 }
+void turn_left(XY& dir) {
+    std::swap(dir.first, dir.second);
+    dir.second *= -1;
+}
+void turn_right(XY& dir) {
+    std::swap(dir.first, dir.second);
+    dir.first *= -1;
+}
+
+enum class State {
+    Clean,
+    Weakened,
+    Infected,
+    Flagged
+};
+
     
 int main() {
-    std::set<XY> infected;
+    std::map<XY, State> nodes;
     XY p;
     XY d{0, -1}; /* 0 -1 = north; 1 0 = east; 0 1 = south; -1 0 = west */
     
@@ -41,9 +35,11 @@ int main() {
         int x = 0;
         for (auto c: line) {
             if (c == '#') {
-                infected.insert(XY{x, y});
+                nodes.insert({XY{x, y}, State::Infected});
+            } else if (c == '.') {
+                nodes.insert({XY{x, y}, State::Clean});
             } else {
-                assert(c == '.');
+                assert(false);
             }
             ++x;
         }
@@ -52,38 +48,44 @@ int main() {
     p.first = (y-1)/2;
     p.second = p.first;
     
-    int loops = 10000;
+#ifdef PART1
+    const int loops = 10000;
+#else
+    const int loops = 10000000;
+#endif
     int infections = 0;
     for (int loop = 0; loop < loops; ++loop) {
-        std::cout << loop << " " << p.first << "/" << p.second << " " << d.first << "/" << d.second << std::endl;
-    
-        //draw(infected, p);
-        
-        auto it = infected.find(p); 
-        if (it == infected.end()) {
-            // turn left
-            std::cout << "left " << d.first << "/" << d.second << " -> ";
-            std::swap(d.first, d.second);
-            d.second *= -1;
-            std::cout << d.first << "/" << d.second << std::endl;
-            
-            // infect
-            infected.insert(p);
-            ++infections;
-            std::cout << "infect" << std::endl;
-        } else {
-            // turn right
-            
-            std::cout << "right " << d.first << "/" << d.second << " -> ";
-            std::swap(d.first, d.second);
-            d.first *= -1;
-            std::cout << d.first << "/" << d.second << std::endl;
-            
-            // clean
-            infected.erase(it);
-            std::cout << "clean" << std::endl;
+        auto state = nodes.find(p);
+        if (state == nodes.end()) {
+            state = nodes.insert({p, State::Clean}).first;
         }
-        // forward
+        switch (state->second) {
+            case State::Clean:
+                turn_left(d);
+#ifdef PART1
+                state->second = State::Infected;
+                ++infections;
+#else
+                state->second = State::Weakened;
+#endif
+                break;
+            case State::Infected:
+                turn_right(d);
+#ifdef PART1
+                state->second = State::Clean;
+#else
+                state->second = State::Flagged;
+#endif
+                break;
+            case State::Weakened:
+                state->second = State::Infected;
+                ++infections;
+                break;
+            case State::Flagged:
+                reverse(d);
+                state->second = State::Clean;
+                break;
+        }
         p.first += d.first;
         p.second += d.second;
     }
