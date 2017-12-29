@@ -8,3 +8,7 @@ test1: part1
 puzzle1: part1
 	@echo "puzzle result:"
 	@time ./$< < ../puzzle1.txt
+
+puzzle2: part2
+	@echo "puzzle result:"
+	@time ./$< < ../puzzle1.txt
