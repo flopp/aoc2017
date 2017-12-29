@@ -1,12 +1,18 @@
 CXXFLAGS=-std=c++11 -O3 -W -Wall
 
+part1-test: main.cpp
+	$(CXX) $(CXXFLAGS) -DPART1 -DTEST -o $@ $< 
+
 part1: main.cpp
 	$(CXX) $(CXXFLAGS) -DPART1 -o $@ $< 
+
+part2-test: main.cpp
+	$(CXX) $(CXXFLAGS) -DPART2 -DTEST -o $@ $< 
 
 part2: main.cpp
 	$(CXX) $(CXXFLAGS) -DPART2 -o $@ $< 
 
-all: part1 part2
+all: part1-test part1 part2-test part2 
 
 clean:
-	rm -f part1 part2
+	rm -f part1-test part1 part2-test part2 
